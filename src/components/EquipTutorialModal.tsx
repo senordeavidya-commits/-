@@ -1,13 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Card } from '@/types';
 import { useGameStore } from '@/store/gameStore';
-
-interface EquipTutorialModalProps {
-  card: Card;
-  onClose: () => void;
-}
 
 interface TutorialSection {
   title: string;
@@ -164,10 +158,20 @@ const AttributeChange = ({ label, current, expected }: { label: string; current:
   );
 };
 
-export const EquipTutorialModal = ({ card, onClose }: EquipTutorialModalProps) => {
-  const { equipCard, setHideEquipTutorial, equippedCards } = useGameStore();
+export const EquipTutorialModal = () => {
+  const { 
+    pendingEquipCard, 
+    setPendingEquipCard, 
+    equipCard, 
+    setHideEquipTutorial, 
+    equippedCards 
+  } = useGameStore();
+  
   const [hideFuture, setHideFuture] = useState(false);
 
+  if (!pendingEquipCard) return null;
+
+  const card = pendingEquipCard;
   const tutorialSections = getCardTutorialSections(card.id);
 
   const currentDelta = equippedCards.reduce((sum, c) => sum + c.delta, 0);
@@ -180,18 +184,22 @@ export const EquipTutorialModal = ({ card, onClose }: EquipTutorialModalProps) =
   const expectedTheta = currentTheta + card.theta;
   const expectedVega = currentVega + card.vega;
 
+  const handleClose = () => {
+    setPendingEquipCard(null);
+  };
+
   const handleConfirm = () => {
     if (hideFuture) {
       setHideEquipTutorial(true);
     }
     equipCard(card);
-    onClose();
+    setPendingEquipCard(null);
   };
 
   return (
     <div 
-      className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-      onClick={onClose}
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm"
+      onClick={handleClose}
     >
       <div 
         className="bg-zinc-800 border border-zinc-600 rounded-xl p-4 max-w-sm w-full animate-slide-up flex flex-col"
@@ -266,7 +274,7 @@ export const EquipTutorialModal = ({ card, onClose }: EquipTutorialModalProps) =
         
         <div className="flex gap-2 mt-3">
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="flex-1 py-2 bg-zinc-700 text-zinc-300 hover:bg-zinc-600 rounded-lg font-medium transition-colors text-sm"
           >
             取消

@@ -1,9 +1,7 @@
 'use client';
 
-import { useState } from 'react';
 import { useGameStore } from '@/store/gameStore';
 import { Card } from '@/types';
-import { EquipTutorialModal } from './EquipTutorialModal';
 import { useFilteredMarketCards } from '@/hooks/useFilteredMarketCards';
 
 const getCardColor = (cardName: string): string => {
@@ -76,12 +74,11 @@ export const DeckAndControls = () => {
     stamina, 
     equipCard,
     hideEquipTutorial,
+    setPendingEquipCard,
     calculateTurnResult,
     currentStep,
     levels
   } = useGameStore();
-
-  const [selectedCard, setSelectedCard] = useState<Card | null>(null);
 
   const canAdvance = currentStep < levels.length && stamina > 0;
 
@@ -92,7 +89,7 @@ export const DeckAndControls = () => {
     if (hideEquipTutorial) {
       equipCard(card);
     } else {
-      setSelectedCard(card);
+      setPendingEquipCard(card);
     }
   };
 
@@ -105,46 +102,37 @@ export const DeckAndControls = () => {
   };
 
   return (
-    <>
-      <div className="bg-zinc-950/90 backdrop-blur-sm border-t border-zinc-800 px-4 py-4">
-        <div className="flex justify-center mb-3">
-          <button
-            onClick={handleEndTurn}
-            disabled={!canAdvance}
-            className={`
-              px-8 py-3 rounded-xl font-bold text-lg transition-all duration-300
-              ${canAdvance
-                ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:from-purple-500 hover:to-blue-500 active:scale-95 shadow-lg'
-                : 'bg-zinc-700 text-zinc-500 cursor-not-allowed'
-              }
-            `}
-          >
-            ⏭️ 结束回合
-          </button>
-        </div>
-        
-        <div className="flex justify-center gap-2 overflow-x-auto pb-2">
-          {marketCards.map((card) => (
-            <CardView
-              key={card.id}
-              card={card}
-              onClick={() => handleCardClick(card)}
-              disabled={isCardDisabled(card)}
-            />
-          ))}
-        </div>
-        
-        <div className="text-center text-xs text-zinc-500 mt-2">
-          点击卡牌购买装备 | 装备槽: {equippedCards.length}/{maxEquipSlots}
-        </div>
+    <div className="bg-zinc-950/90 backdrop-blur-sm border-t border-zinc-800 px-4 py-4">
+      <div className="flex justify-center mb-3">
+        <button
+          onClick={handleEndTurn}
+          disabled={!canAdvance}
+          className={`
+            px-8 py-3 rounded-xl font-bold text-lg transition-all duration-300
+            ${canAdvance
+              ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:from-purple-500 hover:to-blue-500 active:scale-95 shadow-lg'
+              : 'bg-zinc-700 text-zinc-500 cursor-not-allowed'
+            }
+          `}
+        >
+          ⏭️ 结束回合
+        </button>
       </div>
       
-      {selectedCard && (
-        <EquipTutorialModal
-          card={selectedCard}
-          onClose={() => setSelectedCard(null)}
-        />
-      )}
-    </>
+      <div className="flex justify-center gap-2 overflow-x-auto pb-2">
+        {marketCards.map((card) => (
+          <CardView
+            key={card.id}
+            card={card}
+            onClick={() => handleCardClick(card)}
+            disabled={isCardDisabled(card)}
+          />
+        ))}
+      </div>
+      
+      <div className="text-center text-xs text-zinc-500 mt-2">
+        点击卡牌购买装备 | 装备槽: {equippedCards.length}/{maxEquipSlots}
+      </div>
+    </div>
   );
 };

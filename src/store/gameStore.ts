@@ -18,6 +18,7 @@ interface GameStore {
   selectedEquippedInstanceId: string | null;
   isTutorial: boolean;
   showTutorialComplete: boolean;
+  pendingEquipCard: Card | null;
 
   setToast: (toast: ToastMessage | null) => void;
   setHideEquipTutorial: (hide: boolean) => void;
@@ -26,6 +27,7 @@ interface GameStore {
   setSelectedEquippedInstanceId: (instanceId: string | null) => void;
   setIsTutorial: (isTutorial: boolean) => void;
   setShowTutorialComplete: (show: boolean) => void;
+  setPendingEquipCard: (card: Card | null) => void;
   skipTutorial: () => void;
   calculateTurnResult: () => boolean;
   confirmAdvance: () => void;
@@ -51,6 +53,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   selectedEquippedInstanceId: null,
   isTutorial: true,
   showTutorialComplete: false,
+  pendingEquipCard: null,
 
   setToast: (toast) => set({ toast }),
   
@@ -65,6 +68,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
   setIsTutorial: (isTutorial) => set({ isTutorial }),
   
   setShowTutorialComplete: (show) => set({ showTutorialComplete: show }),
+  
+  setPendingEquipCard: (card) => set({ pendingEquipCard: card }),
   
   skipTutorial: () => {
     set({
@@ -179,6 +184,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       selectedEquippedInstanceId: null,
       isTutorial: true,
       showTutorialComplete: false,
+      pendingEquipCard: null,
     });
   },
 }));

@@ -11,6 +11,7 @@ import { TurnResultModal } from '@/components/TurnResultModal';
 import { UnequipModal } from '@/components/UnequipModal';
 import { TutorialCompleteModal } from '@/components/TutorialCompleteModal';
 import { WelcomeTutorialModal } from '@/components/WelcomeTutorialModal';
+import { EquipTutorialModal } from '@/components/EquipTutorialModal';
 
 export default function Home() {
   const { gameState } = useGameStore();
@@ -29,11 +30,14 @@ export default function Home() {
         <EquipmentBar />
         <DeckAndControls />
       </div>
+      
+      {/* --- 所有弹窗必须放在这里！ --- */}
       <Toast />
       <TurnResultModal />
       <UnequipModal />
       <TutorialCompleteModal />
       <WelcomeTutorialModal />
+      <EquipTutorialModal />
     </div>
   );
 }
