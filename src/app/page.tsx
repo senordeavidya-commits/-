@@ -22,9 +22,13 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-zinc-950 flex flex-col max-w-md mx-auto relative">
       <StatusBar />
-      <AdventureMap />
-      <EquipmentBar />
-      <DeckAndControls />
+      <div className="relative z-20 flex-1 overflow-hidden">
+        <AdventureMap />
+      </div>
+      <div className="relative z-10">
+        <EquipmentBar />
+        <DeckAndControls />
+      </div>
       <Toast />
       <TurnResultModal />
       <UnequipModal />

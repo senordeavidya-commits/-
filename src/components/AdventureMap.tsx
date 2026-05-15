@@ -47,13 +47,13 @@ const RoadNode = ({ level, isCurrent, onClick }: RoadNodeProps) => {
       </div>
       
       {isHovered && !isCurrent && (
-        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 z-20 w-48 bg-zinc-800 border border-zinc-600 rounded-lg p-3 shadow-xl animate-fade-in">
-          <div className="text-white font-medium text-sm mb-1">{level.text}</div>
-          <div className="text-xs text-zinc-400 space-y-0.5">
+        <div className="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 w-64 p-3 bg-zinc-800 border border-zinc-600 rounded-xl z-[100] shadow-2xl animate-fade-in pointer-events-none">
+          <div className="text-white font-medium text-sm mb-2 break-words whitespace-normal text-zinc-200">{level.text}</div>
+          <div className="text-xs text-zinc-400 space-y-1">
             <div>标的变动: <span className={level.dS >= 0 ? 'text-green-400' : 'text-red-400'}>{level.dS >= 0 ? '+' : ''}{level.dS}</span></div>
             <div>波动率: <span className={level.dVol >= 0 ? 'text-green-400' : 'text-red-400'}>{level.dVol >= 0 ? '+' : ''}{level.dVol}</span></div>
           </div>
-          <div className="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-zinc-800" />
+          <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-zinc-800" />
         </div>
       )}
     </div>
@@ -73,7 +73,7 @@ export const AdventureMap = () => {
   };
 
   return (
-    <div className="relative flex-1 bg-gradient-to-t from-zinc-950 to-zinc-900 overflow-hidden">
+    <div className="relative flex-1 bg-gradient-to-t from-zinc-950 to-zinc-900 overflow-visible">
       <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/50 via-transparent to-transparent pointer-events-none" />
       
       {isTutorial && (
