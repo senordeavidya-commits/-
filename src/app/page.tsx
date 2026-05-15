@@ -10,6 +10,7 @@ import { Toast } from '@/components/Toast';
 import { TurnResultModal } from '@/components/TurnResultModal';
 import { UnequipModal } from '@/components/UnequipModal';
 import { TutorialCompleteModal } from '@/components/TutorialCompleteModal';
+import { WelcomeTutorialModal } from '@/components/WelcomeTutorialModal';
 
 export default function Home() {
   const { gameState } = useGameStore();
@@ -28,6 +29,7 @@ export default function Home() {
       <TurnResultModal />
       <UnequipModal />
       <TutorialCompleteModal />
+      <WelcomeTutorialModal />
     </div>
   );
 }

@@ -112,7 +112,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       currentStep: newStep,
       stamina: turnResult.newStamina,
       turnResult: null,
-      showTutorialComplete: isTutorial && newStep === 4,
+      showTutorialComplete: isTutorial && newStep === 5,
     });
   },
 

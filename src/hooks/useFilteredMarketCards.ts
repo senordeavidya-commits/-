@@ -5,7 +5,7 @@ import { useGameStore } from '@/store/gameStore';
 export const useFilteredMarketCards = () => {
   const { marketCards, isTutorial, currentStep } = useGameStore();
 
-  if (!isTutorial) {
+  if (!isTutorial || currentStep >= 4) {
     return marketCards;
   }
 
@@ -15,7 +15,9 @@ export const useFilteredMarketCards = () => {
     case 2:
       return marketCards.filter(card => card.id === 'call' || card.id === 'put');
     case 3:
-      return marketCards;
+      return marketCards.filter(card => 
+        card.id === 'call' || card.id === 'put' || card.id === 'long_straddle'
+      );
     default:
       return marketCards;
   }
