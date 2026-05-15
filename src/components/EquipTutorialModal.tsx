@@ -135,11 +135,50 @@ const getCardIcon = (cardId: string): string => {
   }
 };
 
+const AttributeBadge = ({ label, value }: { label: string; value: number }) => (
+  <span className={`bg-zinc-800 text-xs px-2 py-0.5 rounded-full ${value >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+    {label} {value >= 0 ? '+' : ''}{value}
+  </span>
+);
+
+const AttributeChange = ({ label, current, expected }: { label: string; current: number; expected: number }) => {
+  const change = expected - current;
+  const isPositive = expected >= 0;
+  
+  return (
+    <div className="bg-zinc-900/60 rounded-lg p-2 text-center">
+      <div className="text-xs text-zinc-500 mb-1">{label}</div>
+      <div className="flex items-center justify-center gap-1 text-sm">
+        <span className="text-zinc-400">{current}</span>
+        <span className="text-zinc-500">➔</span>
+        <span className={isPositive ? 'text-green-400 font-bold' : 'text-red-400 font-bold'}>
+          {expected >= 0 ? '+' : ''}{expected}
+        </span>
+      </div>
+      {change !== 0 && (
+        <div className={`text-xs mt-1 ${change >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+          {change >= 0 ? '+' : ''}{change}
+        </div>
+      )}
+    </div>
+  );
+};
+
 export const EquipTutorialModal = ({ card, onClose }: EquipTutorialModalProps) => {
-  const { equipCard, setHideEquipTutorial } = useGameStore();
+  const { equipCard, setHideEquipTutorial, equippedCards } = useGameStore();
   const [hideFuture, setHideFuture] = useState(false);
 
   const tutorialSections = getCardTutorialSections(card.id);
+
+  const currentDelta = equippedCards.reduce((sum, c) => sum + c.delta, 0);
+  const currentGamma = equippedCards.reduce((sum, c) => sum + c.gamma, 0);
+  const currentTheta = equippedCards.reduce((sum, c) => sum + c.theta, 0);
+  const currentVega = equippedCards.reduce((sum, c) => sum + c.vega, 0);
+
+  const expectedDelta = currentDelta + card.delta;
+  const expectedGamma = currentGamma + card.gamma;
+  const expectedTheta = currentTheta + card.theta;
+  const expectedVega = currentVega + card.vega;
 
   const handleConfirm = () => {
     if (hideFuture) {
@@ -155,36 +194,56 @@ export const EquipTutorialModal = ({ card, onClose }: EquipTutorialModalProps) =
       onClick={onClose}
     >
       <div 
-        className="bg-zinc-800 border border-zinc-600 rounded-xl p-5 max-w-sm w-full animate-slide-up flex flex-col"
+        className="bg-zinc-800 border border-zinc-600 rounded-xl p-4 max-w-sm w-full animate-slide-up flex flex-col"
         onClick={e => e.stopPropagation()}
       >
-        <div className="text-center mb-4">
-          <div className="text-blue-400 text-sm font-bold mb-1">📚 期权知识库</div>
+        <div className="text-center mb-3">
+          <div className="text-blue-400 text-sm font-bold">📚 装备确认</div>
         </div>
         
-        <div className="flex items-center gap-3 mb-4">
-          <div className={`w-14 h-14 rounded-lg bg-gradient-to-b ${getCardColor(card.id)} flex items-center justify-center`}>
-            <span className="text-3xl">{getCardIcon(card.id)}</span>
+        <div className="flex items-center gap-3 mb-3">
+          <div className={`w-12 h-12 rounded-lg bg-gradient-to-b ${getCardColor(card.id)} flex items-center justify-center`}>
+            <span className="text-2xl">{getCardIcon(card.id)}</span>
           </div>
-          <div>
-            <h3 className="text-white font-bold text-lg">{card.name}</h3>
-            <span className={`text-xs px-2 py-0.5 rounded ${
+          <div className="flex-1">
+            <h3 className="text-white font-bold text-base">{card.name}</h3>
+            <span className={`text-xs px-2 py-0.5 rounded mt-0.5 inline-block ${
               card.cost > 0 ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'
             }`}>
-              购买成本: {card.cost} 体力
+              购买成本: {card.cost > 0 ? '-' : '+'}{Math.abs(card.cost)} 体力
             </span>
           </div>
         </div>
         
-        <div className="bg-gradient-to-r from-blue-900/30 to-purple-900/30 rounded-lg border border-blue-500/20 p-4 mb-4 flex-1 max-h-[60vh] overflow-y-auto space-y-3">
+        <div className="flex flex-wrap gap-1.5 mb-3">
+          <AttributeBadge label="Δ" value={card.delta} />
+          <AttributeBadge label="Γ" value={card.gamma} />
+          <AttributeBadge label="Θ" value={card.theta} />
+          <AttributeBadge label="V" value={card.vega} />
+        </div>
+        
+        <div className="bg-zinc-900/50 rounded-lg border border-zinc-700 p-3 mb-3">
+          <div className="text-xs text-blue-400 font-medium mb-2 flex items-center gap-1">
+            <span>📊</span>
+            <span>装备后属性预测</span>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <AttributeChange label="Δ Delta" current={currentDelta} expected={expectedDelta} />
+            <AttributeChange label="Γ Gamma" current={currentGamma} expected={expectedGamma} />
+            <AttributeChange label="Θ Theta" current={currentTheta} expected={expectedTheta} />
+            <AttributeChange label="V Vega" current={currentVega} expected={expectedVega} />
+          </div>
+        </div>
+        
+        <div className="bg-gradient-to-r from-blue-900/30 to-purple-900/30 rounded-lg border border-blue-500/20 p-3 flex-1 max-h-[45vh] overflow-y-auto space-y-2">
           {tutorialSections.map((section, index) => (
-            <div key={index} className="flex items-start gap-3">
-              <span className="text-lg mt-0.5 flex-shrink-0">{section.icon}</span>
+            <div key={index} className="flex items-start gap-2">
+              <span className="text-base mt-0.5 flex-shrink-0">{section.icon}</span>
               <div className="flex-1">
-                <div className={`text-sm font-bold mb-1 ${section.highlight ? 'text-blue-400' : 'text-white'}`}>
+                <div className={`text-xs font-bold mb-0.5 ${section.highlight ? 'text-blue-400' : 'text-white'}`}>
                   {section.title}
                 </div>
-                <p className="text-zinc-300 text-sm leading-relaxed">
+                <p className="text-zinc-300 text-xs leading-relaxed">
                   {section.content}
                 </p>
               </div>
@@ -192,7 +251,7 @@ export const EquipTutorialModal = ({ card, onClose }: EquipTutorialModalProps) =
           ))}
         </div>
         
-        <div className="flex items-center gap-2 mb-4">
+        <div className="flex items-center gap-2 mt-3">
           <input
             type="checkbox"
             id="hideTutorial"
@@ -200,21 +259,21 @@ export const EquipTutorialModal = ({ card, onClose }: EquipTutorialModalProps) =
             onChange={(e) => setHideFuture(e.target.checked)}
             className="w-4 h-4 rounded bg-zinc-700 border-zinc-600 text-blue-500 focus:ring-blue-500"
           />
-          <label htmlFor="hideTutorial" className="text-zinc-400 text-sm">
+          <label htmlFor="hideTutorial" className="text-zinc-400 text-xs">
             不再提示
           </label>
         </div>
         
-        <div className="flex gap-2">
+        <div className="flex gap-2 mt-3">
           <button
             onClick={onClose}
-            className="flex-1 py-2 bg-zinc-700 text-zinc-300 hover:bg-zinc-600 rounded-lg font-medium transition-colors"
+            className="flex-1 py-2 bg-zinc-700 text-zinc-300 hover:bg-zinc-600 rounded-lg font-medium transition-colors text-sm"
           >
             取消
           </button>
           <button
             onClick={handleConfirm}
-            className="flex-1 py-2 bg-blue-500 text-white hover:bg-blue-400 rounded-lg font-medium transition-colors"
+            className="flex-1 py-2 bg-blue-500 text-white hover:bg-blue-400 rounded-lg font-medium transition-colors text-sm"
           >
             确认装备
           </button>
