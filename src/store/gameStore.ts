@@ -88,7 +88,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
     }
 
     const nextLevel = levels[currentStep];
-    const { changes, total } = calculateStaminaChange(equippedCards, nextLevel);
+    const { changes, total, totalDelta, totalGamma, totalTheta, totalVega } = calculateStaminaChange(equippedCards, nextLevel);
 
     const newStamina = Math.max(0, Math.min(maxStamina, stamina + total));
 
@@ -100,6 +100,10 @@ export const useGameStore = create<GameStore>((set, get) => ({
         changes,
         totalChange: total,
         newStamina,
+        totalDelta,
+        totalGamma,
+        totalTheta,
+        totalVega,
       },
     });
 

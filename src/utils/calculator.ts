@@ -3,7 +3,14 @@ import { Card, Level, StaminaChange } from '@/types';
 export const calculateStaminaChange = (
   equippedCards: Card[],
   nextLevel: Level
-): { changes: StaminaChange[]; total: number } => {
+): { 
+  changes: StaminaChange[]; 
+  total: number;
+  totalDelta: number;
+  totalGamma: number;
+  totalTheta: number;
+  totalVega: number;
+} => {
   const totalDelta = equippedCards.reduce((sum, card) => sum + card.delta, 0);
   const totalGamma = equippedCards.reduce((sum, card) => sum + card.gamma, 0);
   const totalTheta = equippedCards.reduce((sum, card) => sum + card.theta, 0);
@@ -23,7 +30,14 @@ export const calculateStaminaChange = (
 
   const total = deltaChange + gammaChange + thetaChange + vegaChange;
 
-  return { changes, total };
+  return { 
+    changes, 
+    total,
+    totalDelta,
+    totalGamma,
+    totalTheta,
+    totalVega,
+  };
 };
 
 export const getTotalAttributes = (cards: Card[]) => ({

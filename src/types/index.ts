@@ -34,6 +34,10 @@ export interface TurnResult {
   changes: StaminaChange[];
   totalChange: number;
   newStamina: number;
+  totalDelta: number;
+  totalGamma: number;
+  totalTheta: number;
+  totalVega: number;
 }
 
 export interface GameState {

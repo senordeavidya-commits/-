@@ -1,7 +1,6 @@
 'use client';
 
 import { useGameStore } from '@/store/gameStore';
-import { StaminaChange } from '@/types';
 
 const getChangeLabel = (source: string): string => {
   switch (source) {
@@ -13,7 +12,7 @@ const getChangeLabel = (source: string): string => {
   }
 };
 
-const generateAnalysis = (changes: StaminaChange[], total: number): string => {
+const generateAnalysis = (changes: { source: string; amount: number }[], total: number): string => {
   const absChanges = changes.map(c => ({ ...c, abs: Math.abs(c.amount) }));
   const maxChange = absChanges.reduce((a, b) => a.abs > b.abs ? a : b);
   
@@ -60,6 +59,35 @@ const generateAnalysis = (changes: StaminaChange[], total: number): string => {
   return '📊 本回合结算完成。';
 };
 
+interface PnLItemProps {
+  label: string;
+  formula: string;
+  amount: number;
+}
+
+const PnLItem = ({ label, formula, amount }: PnLItemProps) => {
+  const isNonZero = amount !== 0;
+  const isPositive = amount >= 0;
+  
+  return (
+    <div className="py-2">
+      <div className="flex justify-between items-center mb-1">
+        <span className={isNonZero ? 'text-zinc-300' : 'text-zinc-600'}>{label}</span>
+        <span className={`font-medium ${
+          isNonZero 
+            ? (isPositive ? 'text-green-400' : 'text-red-400') 
+            : 'text-zinc-600'
+        }`}>
+          {isPositive && isNonZero ? '+' : ''}{amount}
+        </span>
+      </div>
+      <div className="text-xs text-zinc-500 font-mono pl-2">
+        └ {formula}
+      </div>
+    </div>
+  );
+};
+
 export const TurnResultModal = () => {
   const { turnResult, confirmAdvance, stamina, maxStamina } = useGameStore();
 
@@ -74,13 +102,48 @@ export const TurnResultModal = () => {
     return 'bg-red-500';
   };
 
+  const getPnLItems = () => {
+    const items: PnLItemProps[] = [];
+    
+    turnResult.changes.forEach(change => {
+      let label = '';
+      let formula = '';
+      
+      switch (change.source) {
+        case 'Delta结算':
+          label = 'Delta 敞口损益';
+          formula = `${turnResult.totalDelta} (Δ) × ${turnResult.dS} (dS) = ${change.amount}`;
+          break;
+        case 'Gamma结算':
+          label = 'Gamma 凸性损益';
+          formula = `0.5 × ${turnResult.totalGamma} (Γ) × ${turnResult.dS}² = ${change.amount}`;
+          break;
+        case 'Theta流血':
+          label = 'Theta 时间损耗';
+          formula = `${turnResult.totalTheta} (Θ) × 1 回合 = ${change.amount}`;
+          break;
+        case 'Vega结算':
+          label = 'Vega 波动率溢价';
+          formula = `${turnResult.totalVega} (V) × ${turnResult.dVol} (dVol) = ${change.amount}`;
+          break;
+        default:
+          label = change.source;
+          formula = `= ${change.amount}`;
+      }
+      
+      items.push({ label, formula, amount: change.amount });
+    });
+    
+    return items;
+  };
+
   return (
     <div 
-      className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm"
       onClick={confirmAdvance}
     >
       <div 
-        className="bg-zinc-800 border border-zinc-600 rounded-xl p-5 max-w-sm w-full animate-slide-up"
+        className="bg-zinc-800 border border-zinc-600 rounded-xl p-5 max-w-sm w-full animate-slide-up max-h-[85vh] overflow-y-auto"
         onClick={e => e.stopPropagation()}
       >
         <div className="text-center mb-4">
@@ -97,17 +160,22 @@ export const TurnResultModal = () => {
         </div>
         
         <div className="bg-zinc-900/50 rounded-lg p-3 mb-3">
-          <div className="text-zinc-400 text-xs mb-2">PnL 归因分析</div>
-          <div className="space-y-1">
-            {turnResult.changes.map((change, index) => (
-              <div key={index} className="flex justify-between text-sm">
-                <span className="text-zinc-300">{getChangeLabel(change.source)}</span>
-                <span className={change.amount >= 0 ? 'text-green-400' : 'text-red-400'}>
-                  {change.amount >= 0 ? '+' : ''}{change.amount}
-                </span>
-              </div>
+          <div className="flex justify-between items-center mb-3">
+            <span className="text-zinc-400 text-xs">当前面板属性</span>
+            <div className="flex gap-2">
+              <span className={`text-xs ${turnResult.totalDelta !== 0 ? 'text-green-400' : 'text-zinc-600'}`}>Δ {turnResult.totalDelta}</span>
+              <span className={`text-xs ${turnResult.totalGamma !== 0 ? 'text-green-400' : 'text-zinc-600'}`}>Γ {turnResult.totalGamma}</span>
+              <span className={`text-xs ${turnResult.totalTheta !== 0 ? 'text-red-400' : 'text-zinc-600'}`}>Θ {turnResult.totalTheta}</span>
+              <span className={`text-xs ${turnResult.totalVega !== 0 ? 'text-green-400' : 'text-zinc-600'}`}>V {turnResult.totalVega}</span>
+            </div>
+          </div>
+          
+          <div className="text-zinc-400 text-xs mb-2">PnL 归因分析（泰勒展开）</div>
+          <div className="space-y-0 border-t border-zinc-700">
+            {getPnLItems().map((item, index) => (
+              <PnLItem key={index} {...item} />
             ))}
-            <div className="border-t border-zinc-700 mt-2 pt-2 flex justify-between font-medium">
+            <div className="border-t border-zinc-700 pt-2 mt-2 flex justify-between font-medium">
               <span className="text-zinc-300">本回合总计</span>
               <span className={turnResult.totalChange >= 0 ? 'text-green-400' : 'text-red-400'}>
                 {turnResult.totalChange >= 0 ? '+' : ''}{turnResult.totalChange}
