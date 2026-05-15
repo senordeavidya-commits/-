@@ -61,7 +61,7 @@ const RoadNode = ({ level, isCurrent, onClick }: RoadNodeProps) => {
 };
 
 export const AdventureMap = () => {
-  const { currentStep, levels } = useGameStore();
+  const { currentStep, levels, isTutorial, skipTutorial } = useGameStore();
   
   const visibleLevels = levels.slice(
     Math.max(0, currentStep - 2),
@@ -75,6 +75,21 @@ export const AdventureMap = () => {
   return (
     <div className="relative flex-1 bg-gradient-to-t from-zinc-950 to-zinc-900 overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/50 via-transparent to-transparent pointer-events-none" />
+      
+      {isTutorial && (
+        <div className="absolute top-4 left-4 right-4 z-30 flex items-center justify-between">
+          <div className="bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/50 rounded-full px-4 py-2 flex items-center gap-2">
+            <span className="text-yellow-400 text-lg">🎓</span>
+            <span className="text-yellow-300 text-sm font-medium">新手训练营中...</span>
+          </div>
+          <button
+            onClick={skipTutorial}
+            className="bg-zinc-800/80 hover:bg-zinc-700/80 border border-zinc-600 rounded-full px-3 py-1.5 text-zinc-300 text-xs font-medium transition-all duration-200"
+          >
+            跳过教程
+          </button>
+        </div>
+      )}
       
       <div className="relative h-full flex flex-col items-center justify-start pt-8 px-4">
         <div className="absolute left-1/2 -translate-x-1/2 w-1 bg-gradient-to-t from-zinc-800 to-zinc-700 h-full" />

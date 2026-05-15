@@ -16,12 +16,17 @@ interface GameStore {
   hideEquipTutorial: boolean;
   turnResult: TurnResult | null;
   selectedEquippedInstanceId: string | null;
+  isTutorial: boolean;
+  showTutorialComplete: boolean;
 
   setToast: (toast: ToastMessage | null) => void;
   setHideEquipTutorial: (hide: boolean) => void;
   setTurnResult: (result: TurnResult | null) => void;
   setGameState: (state: 'start' | 'playing' | 'gameover') => void;
   setSelectedEquippedInstanceId: (instanceId: string | null) => void;
+  setIsTutorial: (isTutorial: boolean) => void;
+  setShowTutorialComplete: (show: boolean) => void;
+  skipTutorial: () => void;
   calculateTurnResult: () => boolean;
   confirmAdvance: () => void;
   equipCard: (card: Card) => boolean;
@@ -44,6 +49,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
   hideEquipTutorial: false,
   turnResult: null,
   selectedEquippedInstanceId: null,
+  isTutorial: true,
+  showTutorialComplete: false,
 
   setToast: (toast) => set({ toast }),
   
@@ -54,6 +61,19 @@ export const useGameStore = create<GameStore>((set, get) => ({
   setGameState: (state) => set({ gameState: state }),
   
   setSelectedEquippedInstanceId: (instanceId) => set({ selectedEquippedInstanceId: instanceId }),
+  
+  setIsTutorial: (isTutorial) => set({ isTutorial }),
+  
+  setShowTutorialComplete: (show) => set({ showTutorialComplete: show }),
+  
+  skipTutorial: () => {
+    set({
+      isTutorial: false,
+      currentStep: 4,
+      stamina: 1000,
+      equippedCards: [],
+    });
+  },
 
   calculateTurnResult: () => {
     const { currentStep, levels, equippedCards, stamina, maxStamina } = get();
@@ -82,14 +102,17 @@ export const useGameStore = create<GameStore>((set, get) => ({
   },
 
   confirmAdvance: () => {
-    const { turnResult } = get();
+    const { turnResult, isTutorial, currentStep } = get();
     
     if (!turnResult) return;
 
+    const newStep = currentStep + 1;
+    
     set({
-      currentStep: get().currentStep + 1,
+      currentStep: newStep,
       stamina: turnResult.newStamina,
       turnResult: null,
+      showTutorialComplete: isTutorial && newStep === 4,
     });
   },
 
@@ -154,6 +177,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
       hideEquipTutorial: false,
       turnResult: null,
       selectedEquippedInstanceId: null,
+      isTutorial: true,
+      showTutorialComplete: false,
     });
   },
 }));

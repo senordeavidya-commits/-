@@ -9,6 +9,7 @@ import { DeckAndControls } from '@/components/DeckAndControls';
 import { Toast } from '@/components/Toast';
 import { TurnResultModal } from '@/components/TurnResultModal';
 import { UnequipModal } from '@/components/UnequipModal';
+import { TutorialCompleteModal } from '@/components/TutorialCompleteModal';
 
 export default function Home() {
   const { gameState } = useGameStore();
@@ -26,6 +27,7 @@ export default function Home() {
       <Toast />
       <TurnResultModal />
       <UnequipModal />
+      <TutorialCompleteModal />
     </div>
   );
 }

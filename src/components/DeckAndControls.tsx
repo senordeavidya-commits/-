@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useGameStore } from '@/store/gameStore';
 import { Card } from '@/types';
 import { EquipTutorialModal } from './EquipTutorialModal';
+import { useFilteredMarketCards } from '@/hooks/useFilteredMarketCards';
 
 const getCardColor = (cardName: string): string => {
   if (cardName.includes('认购')) return 'from-green-600 to-emerald-600';
@@ -68,8 +69,8 @@ const CardView = ({ card, onClick, disabled }: CardViewProps) => {
 };
 
 export const DeckAndControls = () => {
+  const marketCards = useFilteredMarketCards();
   const { 
-    marketCards, 
     equippedCards, 
     maxEquipSlots, 
     stamina, 

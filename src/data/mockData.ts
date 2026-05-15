@@ -40,9 +40,9 @@ export const initialCards: Card[] = [
 ];
 
 const scriptedLevels: Level[] = [
-  { step: 1, dS: 0, dVol: 0, text: "【开盘】市场风平浪静，建立初始头寸。" },
-  { step: 2, dS: 15, dVol: 0, text: "【单边逼空】多头突袭，标的价格即将被强力拉升。" },
-  { step: 3, dS: -15, dVol: 0, text: "【恐慌抛售】突发利空，标的价格即将遭遇砸盘。" },
+  { step: 1, dS: 20, dVol: 0, text: "【教学 1】前方发现单边上涨趋势！快在下方市场买入唯一可见的『认购契约』，然后结束回合。" },
+  { step: 2, dS: 0, dVol: 0, text: "【教学 2】市场陷入停滞。如果你不卸下（平仓）刚才的契约，就会被持续扣除时间体力 (Theta)！试试空手走过去，或者买入『认沽契约』防守。" },
+  { step: 3, dS: 0, dVol: 40, text: "【教学 3】前方即将发布财报，方向未知但波动极大！买入新解锁的『跨式组合』，见证波动率 (Vega) 带来的暴利吧！" },
   { step: 4, dS: 0, dVol: 0, text: "【横盘死水】陷入极度窄幅震荡。(防范 Theta 损耗)" },
   { step: 5, dS: 0, dVol: 30, text: "【财报发布】悬念揭晓前夕，隐含波动率(IV)极速飙升。" },
   { step: 6, dS: 0, dVol: -30, text: "【靴子落地】一切尘埃落定，波动率崩塌 (Vol Crush)。" },
